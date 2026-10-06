@@ -99,9 +99,12 @@ python run.py --part A --seed 1 --video      # save the drone camera video
 Each run prints your score and writes your answers to `outputs/<mission>.csv`.
 
 ## 8. Submission
-Before the deadline, submit a **zip of your `solution/` folder** through [submission link].
+Submit through the **Google Form** (link shared in the WhatsApp group). Upload a **zip of your `solution/` folder** to Google Drive, set sharing to **"Anyone with the link can view"**, and paste the Drive link in the form.
 
-- **One member submits for the whole team.** Only the team's last submission before the deadline counts.
+- **Submit early, update often.** Your one `solution.py` can use a different method for each part (check `info["part"]`). Submit as soon as a part works, and keep submitting improved versions.
+- **Your final submission is the one evaluated.** Each new submission replaces the previous one, so the last one before the deadline must contain everything (all parts).
+- **One member submits for the whole team.**
+- **Solutions are tested on hidden test cases** (new fields with the same conditions as practice), so make sure your code works on many practice seeds, not just one.
 - **Name the zip after your team**, e.g. `SkyWatchers.zip`. Use the same team name you registered with and the one you give the judges at the pitch.
 - The zip must contain `solution.py` plus any helper `.py` files it imports. Nothing else is needed.
 - Keep the class name `Solution` and its three methods (`__init__`, `on_frame`, `finalize`) exactly as in the template. Renaming them makes your code fail to run.
@@ -131,7 +134,8 @@ Ties are broken by the lower average position error.
 ## 10. Rules
 - Any method is allowed: classical OpenCV, your own algorithms, machine learning (if it runs with the allowed packages and time budget).
 - Reading ground truth or simulator internals from inside your solution (e.g. importing `fgcsim` to regenerate the world, or reading files) is **not allowed**. Every submission is scanned and the suspicious ones reviewed by hand; violations mean disqualification.
-- Sharing code between teams is not allowed.
+- **AI tools are not allowed** (ChatGPT, Claude, Copilot, Gemini or similar) for writing code or solving the problem.
+- **Do not copy.** Sharing or copying code between teams leads to disqualification.
 - Organizers' decisions are final.
 
 ## 11. Resources
