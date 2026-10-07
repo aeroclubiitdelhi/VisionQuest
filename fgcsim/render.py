@@ -18,6 +18,24 @@ from .geometry import apply_homography, camera_matrix, ground_homography
 from .world import World
 
 
+
+def _undistort_pixels(pts, K, dist, iters=100):
+    """Inverse of OpenCV's lens distortion for pixel points (same fixed-point iteration as
+    cv2.undistortPoints). Pure NumPy, so it works on every OpenCV version."""
+    fx, fy, cx, cy = K[0, 0], K[1, 1], K[0, 2], K[1, 2]
+    k1, k2, p1, p2, k3 = (list(dist) + [0.0] * 5)[:5]
+    x0 = (pts[:, 0] - cx) / fx
+    y0 = (pts[:, 1] - cy) / fy
+    x, y = x0.copy(), y0.copy()
+    for _ in range(iters):
+        r2 = x * x + y * y
+        icdist = 1.0 / (1.0 + ((k3 * r2 + k2) * r2 + k1) * r2)
+        dx = 2 * p1 * x * y + p2 * (r2 + 2 * x * x)
+        dy = p1 * (r2 + 2 * y * y) + 2 * p2 * x * y
+        x = (x0 - dx) * icdist
+        y = (y0 - dy) * icdist
+    return np.stack([x * fx + cx, y * fy + cy], axis=1)
+
 class Renderer:
     def __init__(self, world: World):
         cam = world.cfg.camera
@@ -33,8 +51,7 @@ class Renderer:
         if self.has_dist:
             u, v = np.meshgrid(np.arange(self.w, dtype=np.float64), np.arange(self.h, dtype=np.float64))
             pts = np.stack([u.ravel(), v.ravel()], axis=1).reshape(-1, 1, 2)
-            crit = (cv2.TERM_CRITERIA_COUNT | cv2.TERM_CRITERIA_EPS, 100, 1e-10)
-            ideal = cv2.undistortPointsIter(pts, self.K, self.dist, None, self.K, crit).reshape(-1, 2)
+            ideal = _undistort_pixels(pts.reshape(-1, 2), self.K, self.dist)
             ix = ideal[:, 0].reshape(self.h, self.w)
             iy = ideal[:, 1].reshape(self.h, self.w)
             over = max(-ix.min(), ix.max() - (self.w - 1), -iy.min(), iy.max() - (self.h - 1), 0.0)
